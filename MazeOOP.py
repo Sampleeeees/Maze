@@ -1,5 +1,5 @@
 import json
-import os
+
 
 class Maze:
     maze = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -26,27 +26,28 @@ class Maze:
 class VerifyChek:
     def chek(self):
         try:
-            self.save = open('save.json')
-            if self.save:
+            save = open('save.json')
+            if save:
                 if input('Do you want load save? (y) or (n):') == 'n':
                     i = 1
                     j = 0
-                    self.save = {
+                    save = {
                         'first': i,
                         'second': j
                     }
                     with open('save.json', 'w'):
-                        json.dump(self.save, fp=open('save.json', 'w'))
+                        json.dump(save, fp=open('save.json', 'w'))
         except FileNotFoundError:
             print('Not saves')
             i = 1
             j = 0
-            self.save = {
+            save = {
                 'first': i,
                 'second': j
             }
             with open('save.json', 'w'):
-                json.dump(self.save, fp=open('save.json', 'w'))
+                json.dump(save, fp=open('save.json', 'w'))
+
 
 class QuestGo:
     def quest(self):
@@ -56,24 +57,26 @@ class QuestGo:
         if self.value != 'Up' and self.value != 'Left' and self.value != 'Down' and self.value != 'Right' and self.value != 'End':
             raise TypeError('Incorrect')
 
+
 class SaveIt:
-    def save(self):
+    def saved(self):
+        save = open('save.json')
         try:
-            savestep = input('Do you want save step? (y) or (n)')
-            if savestep == 'y':
+            if input('Do you want save step? (y) or (n)') == 'y':
                 with open('save.json', 'w'):
-                    json.dump(self.save, fp=open('save.json', 'w'))
+                    json.dump(save, fp=open('save.json', 'w'))
             else:
-                del self.save
+                del save
         except ValueError:
             print('Incorrect value')
 
+
 class Game(QuestGo, Maze, SaveIt, VerifyChek):
     def games(self):
-        for k in range(0, len(Maze.maze)):
-            self.save = json.load(open('save.json'))
-            i = self.save['first']
-            j = self.save['second']
+        for p in range(0, len(Maze.maze)*12):
+            save = json.load(open('save.json'))
+            i = save['first']
+            j = save['second']
             self.step = self.maze[i][j]
 
             if self.value == 'Down':
@@ -81,13 +84,13 @@ class Game(QuestGo, Maze, SaveIt, VerifyChek):
                 if self.step != 0:
                     print(f'{self.name} Wall, you are back')
                 else:
-                    self.save = {
+                    save = {
                         'first': i + 1,
                         'second': j
                     }
-                    print(self.save)
+                    print(save)
                     with open('save.json', 'w'):
-                        json.dump(self.save, fp=open('save.json', 'w'))
+                        json.dump(save, fp=open('save.json', 'w'))
                     print(f'{self.name} Right way')
 
             elif self.value == 'Left':
@@ -95,12 +98,12 @@ class Game(QuestGo, Maze, SaveIt, VerifyChek):
                 if self.step != 0:
                     print(f'{self.name} Wall, you are back')
                 else:
-                    self.save = {
+                    save = {
                         'first': i,
                         'second': j - 1
                     }
                     with open('save.json', 'w'):
-                        json.dump(self.save, fp=open('save.json', 'w'))
+                        json.dump(save, fp=open('save.json', 'w'))
                     print(f'{self.name} Right way')
 
             elif self.value == 'Up':
@@ -108,12 +111,12 @@ class Game(QuestGo, Maze, SaveIt, VerifyChek):
                 if self.step != 0:
                     print(f'{self.name}, Wall, you are back')
                 else:
-                    self.save = {
+                    save = {
                         'first': i - 1,
                         'second': j
                     }
                     with open('save.json', 'w'):
-                        json.dump(self.save, fp=open('save.json', 'w'))
+                        json.dump(save, fp=open('save.json', 'w'))
                     print(f'{self.name} Right way')
 
             elif self.value == 'Right':
@@ -121,20 +124,28 @@ class Game(QuestGo, Maze, SaveIt, VerifyChek):
                 if self.step != 0:
                     print(f'{self.name} Wall, you are back')
                 else:
-                    self.save = {
+                    save = {
                         'first': i,
                         'second': j + 1
                     }
                     with open('save.json', 'w'):
-                        json.dump(self.save, fp=open('save.json', 'w'))
-                    print(f'{self.name} Right way')
+                        json.dump(save, fp=open('save.json', 'w'))
+                    print(i,j, f'{self.name} Right way')
 
-            else:
-                pass
+            elif self.value == 'End':
+                try:
+                    Game.saved(self)
+                except TypeError:
+                    print('You dont play')
+                    break
+            elif i == 14 and j == 10:
+                print('You win!!!')
+                break
 
-            print(self.save)
-            QuestGo.quest(QuestGo)
-            k += 1
+            print(save)
+            QuestGo.quest(self)
+            p += 1
+
 
 if __name__ == '__main__':
     x = Game('Dima')
